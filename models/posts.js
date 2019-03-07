@@ -56,16 +56,33 @@ module.exports = {
       .exec()
   },
 
-  // 按创建时间降序获取所有用户文章或者某个特定用户的所有文章
-  getPosts: function getPosts (author) {
+  // 获取所有用户或某个用户的所有文章数量
+  getPostsCount: function getPostsCount (author) {
     const query = {}
     if (author) {
       query.author = author
     }
     return Post
+      .count(query)
+      .exec()
+  },
+
+  // 按创建时间降序获取所有用户或者某个特定用户的指定页文章
+  getPosts: function getPosts (author, pageIndex, pageSize) {
+    const query = {}
+    if (author) {
+      query.author = author
+    }
+    if (!pageIndex) {
+      pageIndex = 1
+      pageSize = 10
+    }
+    return Post
       .find(query)
       .populate({ path: 'author', model: 'User' }) // 读取author对应的User对象
       .sort({ _id: -1 })
+      .skip((pageIndex - 1) * pageSize)
+      .limit(pageSize)
       .addCreatedAt()
       .addCommentsCount()
       .contentToHtml()

@@ -1,0 +1,26 @@
+<div class="ui grid">
+    <div class="four wide column"></div>
+    <div class="eight wide column">
+        <% if (pager.pageIndex > 1) { %>
+            <a href="/posts?pageIndex=<%= pager.pageIndex - 1 %>">上一页</a>
+            <a href="/posts?pageIndex=1">1</a>
+        <% } %>   
+        <% if (pager.pageIndex > 5) { %>
+            ...
+        <% } %>
+        <% for (var i = Math.max(2, pager.pageIndex-3); i < pager.pageIndex; i++) { %>
+            <a href="/posts?pageIndex=<%= i %>"><%= i %></a>
+        <% } %> 
+        <%= pager.pageIndex %>
+        <% for (var i = pager.pageIndex+1 ; i < Math.min(pager.pagesCount, pager.pageIndex+4); i++) { %>
+            <a href="/posts?pageIndex=<%= i %>"><%= i %></a>
+        <% } %> 
+        <% if (pager.pageIndex < pager.pagesCount-4) { %>
+            ...
+        <% } %>
+        <% if (pager.pageIndex < pager.pagesCount) { %>   
+            <a href="/posts?pageIndex=<%= pager.pagesCount %>"><%= pager.pagesCount %></a>     
+            <a href="/posts?pageIndex=<%= pager.pageIndex + 1 %>">下一页</a>
+        <% } %>           
+    </div>
+</div>
