@@ -74,17 +74,6 @@ module.exports = {
       query.author = author
     }
     return Post
-      .count(query)
-      .exec()
-  },
-
-  // 按创建时间降序获取所有用户或者某个特定用户的指定页文章
-  getPosts: function getPosts (author, pageIndex, pageSize) {
-    const query = {}
-    if (author) {
-      query.author = author
-    }
-    return Post
       .find(query)
       .populate({ path: 'author', model: 'User' }) // 读取author对应的User对象
       .sort({ _id: -1 })
