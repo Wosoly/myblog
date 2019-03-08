@@ -84,10 +84,6 @@ module.exports = {
     if (author) {
       query.author = author
     }
-    if (!pageIndex) {
-      pageIndex = 1
-      pageSize = 10
-    }
     return Post
       .find(query)
       .populate({ path: 'author', model: 'User' }) // 读取author对应的User对象
