@@ -1,5 +1,7 @@
 <%- include('header') %>
 
+<%- include('components/pager', { pager: pager }) %>
+
 <% posts.forEach(function (post) { %>
     <%- include('components/post-content', { post: post }) %>
 <% }) %>

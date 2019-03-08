@@ -9,12 +9,22 @@ const checkLogin = require('../middlewares/check').checkLogin
 //   eg: GET /posts?author=xxx
 router.get('/', function (req, res, next) {
   const author = req.query.author
+  const pageIndex = (req.query.pageIndex - 0) || 1 // 转化为数字
+  const pageSize = 10 // req.query.pageSize
 
-  PostModel.getPosts(author)
+  PostModel.getPosts(author, pageIndex, pageSize)
     .then(function (posts) {
-      res.render('posts', {
-        posts: posts
-      })
+      PostModel.getPostsCount(author)
+        .then(function (postsCount) {
+          res.render('posts', {
+            posts: posts,            
+            pager: {              
+              pageIndex: pageIndex,
+              pagesCount: Math.ceil(postsCount / pageSize),
+              queryStringOfAuthor: (author) ? 'author='+author+'&': ''
+            }
+          })
+        })
     })
     .catch(next)
 })
