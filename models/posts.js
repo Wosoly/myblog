@@ -1,6 +1,7 @@
 const marked = require('marked')
 const Post = require('../lib/mongo').Post
 const CommentModel = require('./comments')
+const Comment2Model = require('./comment2s')
 
 // 给 post 添加留言数 commentsCount
 Post.plugin('addCommentsCount', {
@@ -107,12 +108,16 @@ module.exports = {
 
   // 通过文章 id 删除一篇文章
   delPostById: function delPostById (postId, author) {
+    console.log(postId,author)
     return Post.deleteOne({ author: author, _id: postId })
       .exec()
       .then(function (res) {
-        // 文章删除后，再删除该文章下的所有留言
+        // 文章删除后，再删除该文章下的所有留言和2及留言
         if (res.result.ok && res.result.n > 0) {
-          return CommentModel.delCommentsByPostId(postId)
+          return Promise.all([
+            CommentModel.delCommentsByPostId(postId),
+            Comment2Model.delComment2sByPostId(postId)
+          ])
         }
       })
   }

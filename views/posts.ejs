@@ -1,6 +1,6 @@
 <%- include('header') %>
 
-<%- include('components/pager', { pager: pager }) %>
+<%- include('components/pager') %>
 
 <% posts.forEach(function (post) { %>
     <%- include('components/post-content', { post: post }) %>
