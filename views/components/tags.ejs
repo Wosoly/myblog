@@ -1,0 +1,33 @@
+<div class="ui grid">
+    <div class="four wide column"></div>
+    <div class="eight wide column">
+        <div class="ui segment">
+        <div class="ui minimal comments">             
+            <% tags.forEach(function (tag) { %>
+            <div class="comment">
+                <a class="author" href="/posts?author=<%= comment.author._id %>"><%= comment.author.name %></a>
+                <div class="tags"><%- tag.tag %></div>
+                <% if (user) { %>
+                <div class="actions">
+                    <% if (comment.author._id && user._id.toString() === comment.author._id.toString()) { %>                       
+                    <a class="reply" href="/comments/<%= comment._id %>/remove">删除</a>                        
+                    <% } %>
+                    <!-- <a class="reply" onclick="" href="/comments/<%= comment._id %>/comment">留言</a>      -->
+                </div>                  
+                <% } %>      
+                <%- include('comment2s', { comment: comment }) %>             
+            </div>
+            <% }) %>
+            <% if (user) { %>
+            <form class="ui reply form" method="post" action="/comments">
+                <input name="postId" value="<%= post._id %>" hidden>
+                <div class="field">
+                <textarea name="content"></textarea>
+                </div>
+                <input type="submit" class="ui icon button" value="留言" />
+            </form>
+            <% } %>
+        </div>
+        </div>
+    </div>
+</div>
