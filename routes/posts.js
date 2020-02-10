@@ -5,30 +5,6 @@ const CommentModel = require('../models/comments')
 
 const checkLogin = require('../middlewares/check').checkLogin
 
-// GET /posts 所有用户或者特定用户的文章页
-//   eg: GET /posts?author=xxx
-router.get('/', function (req, res, next) {
-  const author = req.query.author
-  const pageIndex = (req.query.pageIndex - 0) || 1 // 转化为数字
-  const pageSize = 10 // req.query.pageSize
-
-  PostModel.getPosts(author, pageIndex, pageSize)
-    .then(function (posts) {
-      PostModel.getPostsCount(author)
-        .then(function (postsCount) {
-          res.render('posts', {
-            posts: posts,            
-            pager: {              
-              pageIndex: pageIndex,
-              pagesCount: Math.ceil(postsCount / pageSize),
-              queryStringOfAuthor: (author) ? 'author='+author+'&': ''
-            }
-          })
-        })
-    })
-    .catch(next)
-})
-
 // POST /posts/create 发表一篇文章
 router.post('/create', checkLogin, function (req, res, next) {
   const author = req.session.user._id
@@ -83,11 +59,13 @@ router.get('/create', checkLogin, function (req, res, next) {
 // GET /posts/:postId 单独一篇的文章页
 router.get('/:postId', function (req, res, next) {
   const postId = req.params.postId
+  const userId = req.session.user._id
 
   Promise.all([
-    PostModel.getPostById(postId), // 获取文章信息
+    PostModel.getPostById(postId, userId), // 获取文章信息
+    // TagModel.getTags(postId),
     CommentModel.getComments(postId), // 获取该文章所有留言
-    PostModel.incPv(postId)// pv 加 1
+    PostModel.incPv(postId) // pv 加 1
   ])
     .then(function (result) {
       const post = result[0]
@@ -100,6 +78,33 @@ router.get('/:postId', function (req, res, next) {
         post: post,
         comments: comments
       })
+    })
+    .catch(next)
+})
+
+// GET /posts 所有用户或者特定用户的文章页
+//   eg: GET /posts?author=xxx
+router.get('/', function (req, res, next) {
+  const author = req.query.author
+  const pageIndex = (req.query.pageIndex - 0) || 1 // 转化为数字
+  const pageSize = 10 // req.query.pageSize
+  if (req.session.user) {
+    var userId = req.session.user._id
+  }
+
+  PostModel.getPosts(author, pageIndex, pageSize, userId)
+    .then(function (posts) {
+      PostModel.getPostsCount(author)
+        .then(function (postsCount) {
+          res.render('posts', {
+            posts: posts,
+            pager: {
+              pageIndex: pageIndex,
+              pagesCount: Math.ceil(postsCount / pageSize),
+              queryStringOfAuthor: (author) ? 'author=' + author + '&' : ''
+            }
+          })
+        })
     })
     .catch(next)
 })
@@ -176,7 +181,7 @@ router.get('/:postId/remove', checkLogin, function (req, res, next) {
       if (post.author._id.toString() !== author.toString()) {
         throw new Error('没有权限')
       }
-      PostModel.delPostById(postId,author)
+      PostModel.delPostById(postId, author)
         .then(function () {
           req.flash('success', '删除文章成功')
           // 删除成功后跳转到主页

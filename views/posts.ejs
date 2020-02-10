@@ -3,7 +3,7 @@
 <%- include('components/pager') %>
 
 <% posts.forEach(function (post) { %>
-    <%- include('components/post-content', { post: post }) %>
+    <%- include('components/post-content', { post: post, tagEditFlag :false }) %>
 <% }) %>
 
 <%- include('footer') %>
