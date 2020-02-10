@@ -12,7 +12,7 @@ Comment.plugin('addComment2s', {
       })
     }))
   },
-  afterFindOne: function (comment) {    
+  afterFindOne: function (comment) {
     if (comment) {
       return Comment2Model.getComments(comment._id).then(function (comment2s) {
         comment.comment2s = comment2s
@@ -52,7 +52,7 @@ module.exports = {
         if (res.result.ok && res.result.n > 0) {
           return Comment2Model.delComment2sByCommentId(commentId)
         }
-      })        
+      })
   },
 
   // 通过文章 id 删除该文章下所有留言
@@ -67,7 +67,7 @@ module.exports = {
       .populate({ path: 'author', model: 'User' })
       .sort({ _id: 1 })
       .addCreatedAt()
-      .addComment2s() //增加二级留言
+      .addComment2s() // 增加二级留言
       .contentToHtml()
       .exec()
   },

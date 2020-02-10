@@ -15,6 +15,16 @@
             <pre><%- post.content %></pre>
             <div>
             <span class="tag"><%= post.created_at %></span>
+            <% if (user) { %>
+                <% post.tags.forEach(function (tag) { %>
+                <span class="tag">
+                    🏷️<%- tag.tag %>
+                    <% if (tagEditFlag) { %>
+                        <a class="delete" href="/tags/<%= tag._id %>/remove">❌</a>
+                    <% } %>  
+                <% }) %>
+                </span>
+            <% } %>  
             <span class="tag right">
                 <span>浏览(<%= post.pv || 0 %>)</span>
                 <span>留言(<%= post.commentsCount || 0 %>)</span>
@@ -29,9 +39,17 @@
                     </div>
                 </div>
                 <% } %>
-
             </span>
             </div>
+            <% if (tagEditFlag) { %>
+            <form class="ui tag form" method="post" action="/tags">
+                <input name="postId" value="<%= post._id %>" hidden>
+                <div class="field">
+                <input name="tag" type="text">
+                </div>
+                <input type="submit" class="ui icon button" value="新增标签" />
+            </form>
+            <% } %>
         </div>
         </div>
     </div>
